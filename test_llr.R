@@ -16,6 +16,37 @@ y = rnorm(x + rnorm(n))
 z = seq(-1, 1, length.out = 100)
 omega = 1
 
+
+# --- output tests for 'compute_f_hat2' function on Q3. --- #
+
+compute_f_hat1 = function(z, x, y, omega) {
+  Wz = make_weight_matrix(z, x, omega)
+  X = make_predictor_matrix(x)
+  f_hat = c(1, z) %*% solve(t(X) %*% Wz %*% X) %*% t(X) %*% Wz %*% y
+  return(f_hat)
+}
+
+compute_f_hat2 = function(z, x, y, omega) {
+  r = abs(x - z) / omega  
+  w = sapply(r, W) # a vector of weights instead of a matrix with weights on the diagonal
+  X = make_predictor_matrix(x)
+  f_hat = c(1, z) %*% solve(t(X) %*% apply(X, 2, function(x) w*x)) %*% t(X) %*% apply(matrix(y), 2, function(y) w*y)
+  return(f_hat)
+}
+
+test_that( "test llr outputs", {
+  expect_equal(compute_f_hat1(z[1], x, y, omega = 1), compute_f_hat2(z[1], x, y, omega = 1))
+} )
+
+
+
+
+
+
+
+
+
+
 # --- tests --- #
 
 test_that( "llr output has correct length", {
@@ -51,4 +82,9 @@ test_that("make_predictor_matrix works on simple cases", {
   # second column is x
   expect_equal(X[, 2], x)
 })
+
+
+
+
+
 
