@@ -15,7 +15,8 @@ compute_f_hat = function(z, x, y, omega) {
   w = sapply(r, W) # a vector of weights instead of a matrix with weights on the diagonal
   X = make_predictor_matrix(x)
   # f_hat = c(1, z) %*% solve(t(X) %*% Wz %*% X) %*% t(X) %*% Wz %*% y
-  f_hat = c(1, z) %*% solve(t(X) %*% apply(X, 2, function(x) w*x)) %*% t(X) %*% apply(matrix(y), 2, function(y) w*y)
+  # f_hat = c(1, z) %*% solve(t(X) %*% apply(X, 2, function(x) w*x)) %*% t(X) %*% apply(matrix(y), 2, function(y) w*y)
+  f_hat = c(1, z) %*% solve(t(X) %*% sweep(X, 1, w, "*")) %*% t(X) %*% matrix(w * y)
   return(f_hat)
 }
 
